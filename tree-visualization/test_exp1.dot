@@ -1,0 +1,25 @@
+digraph {
+
+    0  [label = "Plus"];
+    1  [label = "Numb"];
+    2  [label = "10"];
+    3  [label = "Times"];
+    4  [label = "Numb"];
+    5  [label = "3"];
+    6  [label = "Plus"];
+    7  [label = "Numb"];
+    8  [label = "1"];
+    9  [label = "Numb"];
+    10 [label = "11"];
+    
+    0 ->  1;
+    1 ->  2;
+    0 ->  3;
+    3 ->  4;
+    4 ->  5;
+    3 ->  6;
+    6 ->  7;
+    7 ->  8;
+    6 ->  9;
+    9 -> 10;
+}
