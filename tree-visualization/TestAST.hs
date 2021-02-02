@@ -10,9 +10,10 @@ run :: IO()
 -- run = createDotFile "expAST2" (expAST (Plus (Num 10) (Times (Num 3) (Plus (Num 1) (Num 11)))))
 run = createDotFile "expAST3" (expAST (Times (Num 10) (Times (Num 3) (Plus (Num 1) (Num 11)))))
 
+rootId = "1"
 
 expAST :: Exp -> DotGraph
-expAST e = DotGraph NonStrict Directed (Just (convertToId "")) (expASTStatements "1" e)
+expAST e = DotGraph NonStrict Directed (Just (convertToId "")) (expASTStatements rootId e)
 
 expASTStatements :: [Char] -> Exp -> [Statement]
 expASTStatements nextId (Num n) = [ 
