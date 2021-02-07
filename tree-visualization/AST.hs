@@ -3,6 +3,8 @@ module AST where
 import Dot
 import Data.Text as T
 
+-- TODO: look at encodeCompass / CardinalDirection in dot hackage
+
 
 createDotFile :: [Char] -> DotGraph -> IO ()
 createDotFile fileName dotGraph = do
