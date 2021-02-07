@@ -1,5 +1,9 @@
 {-# LANGUAGE DeriveDataTypeable #-}
 
+-- this file inspired by this article:
+-- https://chrisdone.com/posts/data-typeable/#fnref1
+
+
 import Data.Typeable
 import Data.Data 
 import Data.Generics.Aliases
