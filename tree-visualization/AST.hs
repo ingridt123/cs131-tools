@@ -4,7 +4,7 @@ import Dot
 import Data.Text as T
 
 -- TODO: look at encodeCompass / CardinalDirection in dot hackage
-
+-- TODO: convert to pdf (Terminal: dot files.dot -Tpng > files.png)
 
 createDotFile :: [Char] -> DotGraph -> IO ()
 createDotFile fileName dotGraph = do
