@@ -5,18 +5,21 @@
 
 
 import Data.Typeable
-import Data.Data 
-import Data.Generics.Aliases
+import Data.Data ( Data(gmapQ, toConstr), showConstr ) 
+import Data.Generics.Aliases ( extQ )
 -- note: had to run on command line
 -- > stack install syb 
 -- to get Data.Generics.Aliases to work 
 -- syb == "Scrap Your Boilerplate"
 
+-- extQ :: (Typeable a, Typeable b) => (a -> q) -> (b -> q) -> a -> q
+-- Extend a generic query by a type-specific case
+
 gshows :: Data a => a -> ShowS
 gshows = render `extQ` (shows :: String -> ShowS) where
-  render t
+  render t                            -- render :: (a -> ShowS)
     | isTuple = showChar '('
-              . drop 1
+              . drop 1                -- removes first element from list
               . commaSlots
               . showChar ')'
     | isNull = showString "[]"
@@ -44,20 +47,23 @@ data Stuff
     = None  
     | This Int 
     | That Bool
+    | That2 (Stuff, Stuff)
     | Those [Stuff] 
     deriving (Show, Eq, Data, Typeable)
 
 data Foo = Foo Char Int deriving (Data,Typeable)
 
 x = This 5
-y = That False 
+y = That False
 z = None
 w = Those [x,y,z]
+v = (x,y)
 
-x_string = gshow x 
-y_string = gshow y 
-z_string = gshow z 
-w_string = gshow w
+x_string = gshow x      -- "(This (5))"
+y_string = gshow y      -- "(That (False))"
+z_string = gshow z      -- "(None)"
+w_string = gshow w      -- "(Those [(This(5)), (That (False)), (None)])" ??
+v_string = gshow v      -- "(That2 ((This (5)), (That (False))))" ??
 ex_string = gshow ([Just (2 ::Int) ],'c',Foo 'a' 5) 
 
 main :: IO ()
@@ -78,3 +84,20 @@ main = do
 -- are the isNull, isTuple, isList, and gmapQ, which 
 -- enforce that the passed in values are types than
 -- can either be dealt with, or the failure is captured 
+
+-- Alternative: https://stackoverflow.com/questions/34967447/dynamically-retrieve-values-of-a-data-type
+-- | Generic show: an alternative to \"deriving Show\"
+-- gshow :: Data a => a -> String
+-- gshow x = gshows x ""
+
+-- -- | Generic shows
+-- gshows :: Data a => a -> ShowS
+
+-- -- This is a prefix-show using surrounding "(" and ")",
+-- -- where we recurse into subterms with gmapQ.
+-- gshows = ( \t ->
+--                 showChar '('
+--               . (showString . showConstr . toConstr $ t)
+--               . (foldr (.) id . gmapQ ((showChar ' ' .) . gshows) $ t)
+--               . showChar ')'
+--          ) `extQ` (shows :: String -> ShowS)
