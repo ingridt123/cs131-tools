@@ -58,7 +58,8 @@ createDotFile "dataAST" (dataAST (Data ...))
 > dataTypeOf ((Plus (Num 1) (Num 2)))
 DataType {tycon = "Exp", datarep = AlgRep [Num,Plus,Times]}
 
-> gmapQ (\d -> typeOf d) ((BinOp (Num2 1.0) TimesOp (BinOp (Num2 5.0) PlusOp (Num2 8.0))))
+> gmapQ (\d -> typeOf d) ((BinOp (Num2 1.0) TimesOp 
+> gmapQ typeOf ((BinOp (Num2 1.0) TimesOp (BinOp (Num2 5.0) PlusOp (Num2 8.0))))
 [Exp2,Op,Exp2]
 
 > gmapQ (\d -> toConstr d) ((BinOp (Num2 1.0) TimesOp (BinOp (Num2 5.0) PlusOp (Num2 8.0))))
@@ -72,4 +73,10 @@ DataType {tycon = "Exp", datarep = AlgRep [Num,Plus,Times]}
 
 > gmapQ (\d -> dataTypeOf d) ((BinOp (Num2 1.0) TimesOp (BinOp (Num2 5.0) PlusOp (Num2 8.0))))
 [DataType {tycon = "Exp2", datarep = AlgRep [Num2,BinOp]},DataType {tycon = "Op", datarep = AlgRep [PlusOp,MinusOp,TimesOp,DivOp]},DataType {tycon = "Exp2", datarep = AlgRep [Num2,BinOp]}]
+
+> gmapQ gshow (Times (Num 10) (Times (Num 3) (Plus (Num 1) (Num 11))))
+["(Num (10))","(Times (Num (3)) (Plus (Num (1)) (Num (11))))"]
+
+> gmapQ gshow (BinOp (Num2 2.0) MinusOp (BinOp (BinOp (Num2 7.0) TimesOp (BinOp (Num2 2.0) PlusOp (Num2 3.0))) DivOp (BinOp (Num2 1.0) PlusOp (Num2 1.0))))
+["(Num2 (2.0))","(MinusOp)","(BinOp (BinOp (Num2 (7.0)) (TimesOp) (BinOp (Num2 (2.0)) (PlusOp) (Num2 (3.0)))) (DivOp) (BinOp (Num2 (1.0)) (PlusOp) (Num2 (1.0))))"]
 ```

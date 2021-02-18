@@ -5,6 +5,8 @@ module TestData where
 import Data.Typeable
 import Data.Data 
 
+data Foo = Foo Char Int deriving (Data,Typeable)
+
 data Exp = Num      Int 
          | Plus     Exp Exp 
          | Times    Exp Exp 
