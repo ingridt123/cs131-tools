@@ -16,6 +16,8 @@ rootId = "1"
 run = createDotFile "genericAST-test11" (dataAST (BinOp (Num2 2.0) MinusOp (BinOp (BinOp (Num2 7.0) TimesOp (BinOp (Num2 2.0) PlusOp (Num2 3.0))) DivOp (BinOp (Num2 1.0) PlusOp (Num2 1.0)))))
 
 
+-- | METHOD 1: Build AST from constructor string list
+
 -- | Build AST from any data type
 --   (showConstr (toConstr d) : gmapQ gshow d)
 --   Parent1 (Child1.1 ...) (Child1.2 ...) ... --> ["Parent1", "(Child1.1 (...))", "(Child1.2 (...))", ...]
@@ -23,9 +25,6 @@ run = createDotFile "genericAST-test11" (dataAST (BinOp (Num2 2.0) MinusOp (BinO
 --        ["Times","(Num (10))","(Times (Num (3)) (Plus (Num (1)) (Num (11))))"]
 dataAST :: Data d => d -> DotGraph
 dataAST d = DotGraph NonStrict Directed (name "") (dataASTStatements rootId (showConstr (toConstr d) : gmapQ gshow d))
-
-
--- | METHOD 1: Build AST from constructor string list
 
 -- | Build list of statements for AST
 dataASTStatements :: String -> [String] -> [Statement]          

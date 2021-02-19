@@ -50,6 +50,13 @@ createDotFile :: [Char] -> DotGraph -> IO ()
 createDotFile "dataAST" (dataAST (Data ...))
 ```
 
+
+### Converting DOT File to PNG
+```
+dot files.dot -Tpng > files.png
+```
+
+
 ### Notes
 ```
 > show (toConstr (Plus (Num 1) (Num 2)))
