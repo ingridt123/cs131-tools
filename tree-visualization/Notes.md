@@ -1,5 +1,11 @@
 # Generalizing Tree Visualization
 
+* `TestData.hs` contains data types being used for testing
+* `GenericAST.hs` contains code for generating ASTs for any data type
+* `AST.hs` contains helper functions for generating AST and creating DOT files (using the Dot Hackage)
+* `TestAST.hs` contains code for generating ASTs for Exp and Exp2
+
+
 ### Defining the Data Type
 ```
 data Data = Parent1     Child1.1 Child1.2 ... Child1.n_1

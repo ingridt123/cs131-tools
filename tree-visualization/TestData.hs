@@ -18,3 +18,11 @@ data Op = PlusOp | MinusOp | TimesOp | DivOp
 data Exp2 = Num2      Double
           | BinOp     Exp2 Op Exp2
             deriving (Show, Data, Typeable)
+
+data Stuff
+    = None  
+    | This Int 
+    | That Bool
+    | That2 (Stuff, Stuff)
+    | Those [Stuff] 
+    deriving (Show, Data, Typeable)

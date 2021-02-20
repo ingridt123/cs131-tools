@@ -13,7 +13,14 @@ rootId = "1"
 
 -- run = createDotFile "genericAST-test9" (dataAST (Times (Num 10) (Times (Num 3) (Plus (Num 1) (Num 11)))))
 -- run = createDotFile "genericAST-test10" (dataAST (Times (Plus (Num 2) (Num 5)) (Num 8)))
-run = createDotFile "genericAST-test11" (dataAST (BinOp (Num2 2.0) MinusOp (BinOp (BinOp (Num2 7.0) TimesOp (BinOp (Num2 2.0) PlusOp (Num2 3.0))) DivOp (BinOp (Num2 1.0) PlusOp (Num2 1.0)))))
+-- run = createDotFile "genericAST-test11" (dataAST (BinOp (Num2 2.0) MinusOp (BinOp (BinOp (Num2 7.0) TimesOp (BinOp (Num2 2.0) PlusOp (Num2 3.0))) DivOp (BinOp (Num2 1.0) PlusOp (Num2 1.0)))))
+
+exp_1 = Times (Num 10) (Times (Num 3) (Plus (Num 1) (Num 11)))
+exp_2 = Times (Plus (Num 2) (Num 5)) (Num 8)
+exp2_1 = BinOp (Num2 2.0) MinusOp (BinOp (BinOp (Num2 7.0) TimesOp (BinOp (Num2 2.0) PlusOp (Num2 3.0))) DivOp (BinOp (Num2 1.0) PlusOp (Num2 1.0)))
+
+run :: Data d => d -> String -> Int -> IO()
+run d str num = createDotFile ("genericAST-" ++ str ++ "-" ++ show num) (dataAST d)
 
 
 -- | METHOD 1: Build AST from constructor string list
