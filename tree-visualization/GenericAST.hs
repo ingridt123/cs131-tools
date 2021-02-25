@@ -13,14 +13,13 @@ rootId = "1"
 -- | METHOD 1: Build AST from constructor string list
 
 -- | Build AST from any data type
---   (showConstr (toConstr d) : gmapQ gshow d)
---   Parent1 (Child1.1 ...) (Child1.2 ...) ... --> ["Parent1", "(Child1.1 (...))", "(Child1.2 (...))", ...]
---   e.g. (Times (Num 10) (Times (Num 3) (Plus (Num 1) (Num 11)))) --> 
---        ["Times","(Num (10))","(Times (Num (3)) (Plus (Num (1)) (Num (11))))"]
 dataAST :: Data d => d -> DotGraph
 dataAST d = DotGraph NonStrict Directed (name "") (dataASTStatements rootId (dataASTStrList d))
 
 -- | Build string list of data type for AST
+--   Parent1 (Child1.1 ...) (Child1.2 ...) ... --> ["Parent1", "(Child1.1 (...))", "(Child1.2 (...))", ...]
+--   e.g. (Times (Num 10) (Times (Num 3) (Plus (Num 1) (Num 11)))) --> 
+--        ["Times","(Num (10))","(Times (Num (3)) (Plus (Num (1)) (Num (11))))"]
 dataASTStrList :: Data d => d -> [String]
 dataASTStrList d = showConstr (toConstr d) : gmapQ gshow d
 
@@ -29,9 +28,9 @@ dataASTStatements :: String -> [String] -> [Statement]
 dataASTStatements nextId (constr : constrArgs) =
     createNode nextId constr :
     dataASTEdges nextId childIds ++
-    concatMap (\i -> dataASTStatements (childIds !! i) (parentLists !! i)) rangeList    -- apply dataASTParentList to every string in constrArgs -> list of [String]
-                                                                                        -- apply dataASTStatements to next childId + every list in list of [String]
-                                                                                        -- for every element in constrArgs, run dataASTStatements
+    concatMap (\i -> dataASTStatements (childIds !! i) (parentLists !! i)) rangeList    -- Apply dataASTParentList to every string in constrArgs -> list of [String]
+                                                                                        -- Apply dataASTStatements to next childId + every list in list of [String]
+                                                                                        -- For every element in constrArgs, run dataASTStatements
     where rangeList = [0,1..(length constrArgs - 1)]
           childIds = dataASTChildIds nextId (length constrArgs)
           parentLists = map dataASTParentList constrArgs
@@ -52,21 +51,11 @@ dataASTParentList constrArg =
                       then init . tail $ constrArg                 -- Remove outermost brackets
                       else constrArg
         spaceIndices = elemIndices ' ' constrArg2                  -- List of indexes of ' ' in constrArg2
-    in if null spaceIndices
+        paranIndices = elemIndices '(' constrArg2                  -- List of indexes of '(' in constrArg2
+    in if null spaceIndices || (null paranIndices && head constrArg2 == '"')    -- TODO: Hack to account for spaces in strings
         then [constrArg2]
         else let (parent, children) = splitAt (head spaceIndices) constrArg2
              in parent : dataASTParentListHelper 0 False 0 (tail children)      -- Parent as first element, children as subsequent elements
--- dataASTParentList "(Num (10))" = ["Num", "(10)"]
--- dataASTParentList "(10)" = ["10"]
--- dataASTParentList "(Times (Num (3)) (Plus (Num (1)) (Num (11))))" = ["Times", "(Num (3))", "(Plus (Num (1)) (Num (11)))"]
--- dataASTParentList "(Num (3))" = ["Num", "(3)"]
--- dataASTParentList "(3)" = ["3"]
--- dataASTParentList "(Plus (Num (1)) (Num (11)))" = ["Plus", "(Num (1))", "(Num (11))"]
--- dataASTParentList "(Num (1))" = ["Num", "(1)"]
--- dataASTParentList "(1)" = ["1"]
--- dataASTParentList "(Num (11))" = ["Num", "(11)"]
--- dataASTParentList "(11)" = ["11"]
--- dataASTParentList _ = ["Hello"]
           
 -- | Helper function to build list for children
 --   e.g. "(Num (1)) (Num (11)))" --> ["(Num (1))", "(Num (11))"]
@@ -79,16 +68,15 @@ dataASTParentListHelper paranCount inQuotes index children
     = let (child, rest) = splitAt index children
           rest2 = if null rest then rest else tail rest
         in child : dataASTParentListHelper 0 False 0 rest2              
-                                                                -- Update paranCount by parsing next character in string
-    | length children > index && children !! index == '('
+    | length children > index && children !! index == '('       -- Update paranCount by parsing next character in string
     = dataASTParentListHelper (paranCount + 1) inQuotes (index + 1) children
     | length children > index && children !! index == '"'
     = let newParanCount = if inQuotes then paranCount - 1 else paranCount + 1
         in dataASTParentListHelper newParanCount (not inQuotes) (index + 1) children
     | length children > index && children !! index == ')'
     = dataASTParentListHelper (paranCount - 1) inQuotes (index + 1) children
-    | otherwise
-    = dataASTParentListHelper paranCount inQuotes (index + 1) children   -- Must have more indexes because parantheses must match
+    | otherwise                                                 -- Must have more indexes because parantheses must match
+    = dataASTParentListHelper paranCount inQuotes (index + 1) children
 
 
 -- METHOD 2: Build AST from deconstructing data type

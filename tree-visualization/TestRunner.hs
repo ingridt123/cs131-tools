@@ -19,7 +19,7 @@ runAllTests num = do
     runStuffTests num
     runShapeTests num
     runIntListTests num
-    runStrBinTreeTests num
+    -- runStrBinTreeTests num
 
 -- Foo
 foo_1 = Foo ')' 2930
@@ -35,7 +35,7 @@ exp_2 = Times (Plus (Num 2) (Num 5)) (Num 8)
 runExpTests :: Int -> IO ProcessHandle 
 runExpTests num = do
     run exp_1 "exp_1" num
-    run exp_1 "exp_2" num
+    run exp_2 "exp_2" num
 
 -- Exp2
 exp2_1 = BinOp (Num2 2.0) MinusOp (BinOp (BinOp (Num2 7.0) TimesOp (BinOp (Num2 2.0) PlusOp (Num2 3.0))) DivOp (BinOp (Num2 1.0) PlusOp (Num2 1.0)))
@@ -85,14 +85,18 @@ runIntListTests num = do
 
 -- StringBinaryTree
 strBinTree_1 = Node "2" (Leaf "91") (Leaf "hello")
-strBinTree_2 = Node "2" (Node "hello" (Leaf "91") (Node "j" (Leaf "") (Leaf "200"))) (Node "3" (Leaf "  ") (Leaf "293"))
+strBinTree_2 = Node "2" (Node "hello" (Leaf "91") (Node "j" (Leaf "") (Leaf "200"))) (Node "3" (Leaf "__") (Leaf "293"))
 strBinTree_3 = Leaf "81"
+strBinTree_4 = Node "2" (Node "hello" (Leaf "91") (Node "j" (Leaf "") (Leaf "200"))) (Node "3" (Leaf "my leaf") (Leaf "293"))
+strBinTree_5 = Leaf "my leaf"
 
 runStrBinTreeTests :: Int -> IO ProcessHandle 
 runStrBinTreeTests num = do
     run strBinTree_1 "strBinTree_1" num
     run strBinTree_2 "strBinTree_2" num
     run strBinTree_3 "strBinTree_3" num
+    run strBinTree_4 "strBinTree_4" num
+    run strBinTree_5 "strBinTree_5" num
 
 
 -- run = createDotFile "genericAST-test9" (dataAST (Times (Num 10) (Times (Num 3) (Plus (Num 1) (Num 11)))))
