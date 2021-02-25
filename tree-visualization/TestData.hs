@@ -3,26 +3,44 @@
 module TestData where
 
 import Data.Typeable
-import Data.Data 
+import Data.Data
 
-data Foo = Foo Char Int deriving (Data,Typeable)
+data Foo = Foo Char Int deriving (Data, Typeable)
 
 data Exp = Num      Int 
          | Plus     Exp Exp 
          | Times    Exp Exp 
-           deriving (Show, Data, Typeable)
+         deriving (Show, Data, Typeable)
 
 data Op = PlusOp | MinusOp | TimesOp | DivOp
         deriving (Show, Data, Typeable)
 
 data Exp2 = Num2      Double
           | BinOp     Exp2 Op Exp2
-            deriving (Show, Data, Typeable)
+          | ExpList   [Exp]
+          | ExpLists  [Exp] [Exp2]
+          deriving (Show, Data, Typeable)
 
-data Stuff
-    = None  
-    | This Int 
-    | That Bool
-    | That2 (Stuff, Stuff)
-    | Those [Stuff] 
-    deriving (Show, Data, Typeable)
+data Stuff = None  
+           | This Int 
+           | That Bool
+           | That2 (Stuff, Stuff)
+           | That3 (Stuff, Stuff, Stuff)
+           | Those [Stuff] 
+           deriving (Show, Data, Typeable)
+
+data Shape = Circle         Double Double Double 
+           | Square         Double Double Double
+           | RightTriangle  Double Double Double Double
+           deriving (Show, Data, Typeable)
+
+data IntList = Empty
+             | Cons   Int IntList
+             deriving (Show, Data, Typeable)
+
+data StringBinaryTree = Leaf    String 
+                      | Node    String StringBinaryTree StringBinaryTree
+                      deriving (Show, Data, Typeable)
+
+data Stack a = EmptyStack
+             | MkStack      a (Stack a)
