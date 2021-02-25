@@ -1,8 +1,9 @@
 # Generalizing Tree Visualization
 
-* `TestData.hs` contains data types being used for testing
-* `GenericAST.hs` contains code for generating ASTs for any data type
 * `AST.hs` contains helper functions for generating AST and creating DOT files (using the Dot Hackage)
+* `GenericAST.hs` contains code for generating ASTs for any data type
+* `TestData.hs` contains declarations of data types being used for testing
+* `TestRunner.hs` contains code for running tests on data types in `TestData.hs`
 * `TestAST.hs` contains code for generating ASTs for Exp and Exp2
 
 
