@@ -98,6 +98,17 @@ runStrBinTreeTests num = do
     run strBinTree_4 "strBinTree_4" num
     run strBinTree_5 "strBinTree_5" num
 
+-- Stack
+stack_1 :: Stack [Char]
+stack_1 = EmptyStack
+stack_2 :: Stack [Char]
+stack_2 = MkStack "top" (MkStack "2nd" (MkStack "here you go" EmptyStack))
+
+runStackTests :: Int -> IO ProcessHandle 
+runStackTests num = do
+    run stack_1 "stack_1" num
+    run stack_2 "stack_2" num
+
 
 -- run = createDotFile "genericAST-test9" (dataAST (Times (Num 10) (Times (Num 3) (Plus (Num 1) (Num 11)))))
 -- run = createDotFile "genericAST-test10" (dataAST (Times (Plus (Num 2) (Num 5)) (Num 8)))

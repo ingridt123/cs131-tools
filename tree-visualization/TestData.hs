@@ -44,3 +44,4 @@ data StringBinaryTree = Leaf    String
 
 data Stack a = EmptyStack
              | MkStack      a (Stack a)
+             deriving (Show, Data, Typeable)
