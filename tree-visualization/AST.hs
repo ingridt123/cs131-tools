@@ -30,6 +30,7 @@ convertToNodeId id = NodeId (convertToId id) Nothing
 createNode :: String -> String -> Statement
 createNode id label = 
     StatementNode $ NodeStatement (convertToNodeId id) 
+                                  -- [Attribute (convertToId "label") (convertToId label)]
                                   [Attribute (convertToId "label") (convertToId (" " ++ label ++ " "))]
 
 createEdge :: String -> String -> Statement 

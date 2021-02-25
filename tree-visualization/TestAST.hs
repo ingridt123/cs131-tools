@@ -1,14 +1,15 @@
 module TestAST where
 
+import System.Process
 import AST
 import Dot
 import TestData
 
 
-run :: IO()
--- run = createDotFile "expAST" (expAST (Times (Plus (Num 2) (Num 5)) (Num 8)))
--- run = createDotFile "expAST2" (expAST (Plus (Num 10) (Times (Num 3) (Plus (Num 1) (Num 11)))))
-run = createDotFile "expAST3" (expAST (Times (Num 10) (Times (Num 3) (Plus (Num 1) (Num 11)))))
+run :: IO ProcessHandle
+-- run = createASTFiles "expAST" (expAST (Times (Plus (Num 2) (Num 5)) (Num 8)))
+-- run = createASTFiles "expAST2" (expAST (Plus (Num 10) (Times (Num 3) (Plus (Num 1) (Num 11)))))
+run = createASTFiles "expAST3" (expAST (Times (Num 10) (Times (Num 3) (Plus (Num 1) (Num 11)))))
 
 rootId = "1"
 
