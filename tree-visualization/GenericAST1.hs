@@ -1,4 +1,4 @@
-module GenericAST where
+module GenericAST1 where
 
 import Data.Data
 import Data.List ( elemIndices )
@@ -68,42 +68,19 @@ dataASTParentListHelper paranCount inQuotes index children
     = let (child, rest) = splitAt index children
           rest2 = if null rest then rest else tail rest
         in child : dataASTParentListHelper 0 False 0 rest2              
-    | length children > index && children !! index == '('       -- Update paranCount by parsing next character in string
+    | notEndOfStr && children !! index == '('       -- Update paranCount by parsing next character in string
     = dataASTParentListHelper (paranCount + 1) inQuotes (index + 1) children
-    | length children > index && children !! index == '"'
+    | notEndOfStr && children !! index == '"'
     = let newParanCount = if inQuotes then paranCount - 1 else paranCount + 1
         in dataASTParentListHelper newParanCount (not inQuotes) (index + 1) children
-    | length children > index && children !! index == ')'
+    | notEndOfStr && children !! index == ')'
     = dataASTParentListHelper (paranCount - 1) inQuotes (index + 1) children
     | otherwise                                                 -- Must have more indexes because parantheses must match
     = dataASTParentListHelper paranCount inQuotes (index + 1) children
+    where notEndOfStr = length children > index
 
-
--- METHOD 2: Build AST from deconstructing data type
-
--- | Build list of statements for AST
--- dataASTStatements :: Data d => [Char] -> d -> [Statement]
--- dataASTStatements nextId d =
---     createNode nextId (showConstr (toConstr d)) :        -- Create parent node
---     dataASTEdges nextId childIds ++                      -- Add edges from parent to children
---     dataASTChildNodes childIds constrArgs                -- 
---     -- TODO: child node for each field
---     -- TODO: recurse dataASTStatements on all childIds and all constrArgs
---     where constrArgs = dataASTConstrArgs d
---           childIds = dataASTChildIds nextId (length constrArgs)
-
--- TODO: can constrArgs contain different types? or normalize to one type?
-dataASTConstrArgs :: Data d => d -> [[Char]] -- TODO: change data type [[Char]]
-dataASTConstrArgs = gmapQ gshow -- TODO
 
 -- Build list of child ids
 dataASTChildIds :: String -> Int -> [String]
 dataASTChildIds _ 0 = []
 dataASTChildIds nextId i = dataASTChildIds nextId (i-1) ++ [nextId ++ "." ++ show i]
-
--- Add child nodes to AST
--- dataASTChildNodes :: [[Char]] -> [[Char]] -> [Statement]  -- TODO: change data type [[Char]]
--- dataASTChildNodes [] _ = []
--- dataASTChildNodes (id : ids) (arg : args) = createNode id arg : dataASTChildNodes ids args
--- take first id to create node for first field
--- TODO: add showConstr?

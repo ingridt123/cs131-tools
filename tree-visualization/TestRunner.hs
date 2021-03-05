@@ -3,7 +3,7 @@ module TestRunner where
 import Data.Data
 import System.Process
 import AST
-import GenericAST
+import GenericAST1
 import TestData
 
 -- Tester function to create dot and png files of AST
