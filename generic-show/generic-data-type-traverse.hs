@@ -12,11 +12,19 @@ import Data.Generics.Aliases ( extQ )
 -- to get Data.Generics.Aliases to work 
 -- syb == "Scrap Your Boilerplate"
 
+data Exp = Num      Int 
+         | Plus     Exp Exp 
+         | Times    Exp Exp 
+         deriving (Show, Data, Typeable)
+
+exp_1 = Times (Num 10) (Times (Num 3) (Plus (Num 1) (Num 11)))
+
 -- extQ :: (Typeable a, Typeable b) => (a -> q) -> (b -> q) -> a -> q
 -- Extend a generic query by a type-specific case
 
 gshows :: Data a => a -> ShowS
 gshows = render `extQ` (shows :: String -> ShowS) where
+-- gshows = render where
   render t                            -- render :: (a -> ShowS)
     | isTuple = showChar '('
               . drop 1                -- removes first element from list
@@ -35,9 +43,9 @@ gshows = render `extQ` (shows :: String -> ShowS) where
     where constructor = showString . showConstr . toConstr $ t
           slots = foldr (.) id . gmapQ ((showChar ' ' .) . gshows) $ t
           commaSlots = foldr (.) id . gmapQ ((showChar ',' .) . gshows) $ t
-          listSlots = foldr (.) id . init . gmapQ ((showChar ',' .) . gshows) $ t
+          listSlots = foldr (.) id . init . gmapQ ((showChar ',' .) . gshows) $ t   -- doesn't show full list?
           isTuple = all (==',') (filter (not . flip elem "()") (constructor ""))
-          isNull = null (filter (not . flip elem "[]") (constructor ""))
+          isNull = null (filter (not . flip elem "[]") (constructor ""))    -- equivalent to not (any (not . flip elem "[]") (constructor ""))?
           isList = constructor "" == "(:)"
 
 gshow :: Data a => a -> String 
@@ -76,8 +84,8 @@ main = do
 
 
 -- this doesn't work, type error
--- constructorString :: Data a => String 
--- constructorString = showConstr . toConstr
+constructorString :: Data a => a -> String 
+constructorString = showConstr . toConstr
 
 -- But, I suspect the gshow function works 
 -- because of the extQ operator or because buried within it
