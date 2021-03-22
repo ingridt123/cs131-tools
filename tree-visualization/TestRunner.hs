@@ -130,6 +130,8 @@ stack_3 :: Stack (Stack [Char])
 stack_3 = MkStack stack_2 EmptyStack
 stack_4 :: Stack Double
 stack_4 = MkStack 293.01 (MkStack 8.0 (MkStack 15.20 (MkStack 88.90102 EmptyStack)))
+stack_5 :: Stack [Char]
+stack_5 = MkStack ['a', 'b', 'c'] EmptyStack
 
 runStackTests :: Int -> IO ProcessHandle 
 runStackTests num = do
@@ -137,6 +139,7 @@ runStackTests num = do
     run stack_2 "stack_2" num
     run stack_3 "stack_3" num
     run stack_4 "stack_4" num
+    run stack_5 "stack_5" num
 
 
 
