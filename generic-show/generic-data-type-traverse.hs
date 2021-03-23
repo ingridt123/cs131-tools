@@ -23,8 +23,8 @@ exp_1 = Times (Num 10) (Times (Num 3) (Plus (Num 1) (Num 11)))
 -- Extend a generic query by a type-specific case
 
 gshows :: Data a => a -> ShowS
-gshows = render `extQ` (shows :: String -> ShowS) where
--- gshows = render where
+-- gshows = render `extQ` (shows :: String -> ShowS) where
+gshows = render where
   render t                            -- render :: (a -> ShowS)
     | isTuple = showChar '('
               . drop 1                -- removes first element from list
@@ -43,7 +43,8 @@ gshows = render `extQ` (shows :: String -> ShowS) where
     where constructor = showString . showConstr . toConstr $ t
           slots = foldr (.) id . gmapQ ((showChar ' ' .) . gshows) $ t
           commaSlots = foldr (.) id . gmapQ ((showChar ',' .) . gshows) $ t
-          listSlots = foldr (.) id . init . gmapQ ((showChar ',' .) . gshows) $ t   -- doesn't show full list?
+          listSlots = foldr (.) id . gmapQ ((showChar ',' .) . gshows) $ t   -- doesn't show full list?
+          -- listSlots = foldr (.) id . init . gmapQ ((showChar ',' .) . gshows) $ t   -- doesn't show full list?
           isTuple = all (==',') (filter (not . flip elem "()") (constructor ""))
           isNull = null (filter (not . flip elem "[]") (constructor ""))    -- equivalent to not (any (not . flip elem "[]") (constructor ""))?
           isList = constructor "" == "(:)"
