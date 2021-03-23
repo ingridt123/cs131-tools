@@ -49,8 +49,12 @@ gshows :: Data a => a -> ShowS
 -- This is a prefix-show using surrounding "(" and ")",
 -- where we recurse into subterms with gmapQ.
 gshows = ( \t ->
-                showChar '('
-              . (showString . showConstr . toConstr $ t)
-              . (foldr (.) id . gmapQ ((showChar ' ' .) . gshows) $ t)
-              . showChar ')'
-         ) `extQ` (shows :: String -> ShowS)
+                showChar '('                                              -- Prepends output with (          :: ShowS
+              . (showString . showConstr . toConstr $ t)                  -- Adds constructor name to output :: ShowS
+              . (foldr (.) id . gmapQ ((showChar ' ' .) . gshows) $ t)    -- Adds subterms to output         :: ShowS
+              . showChar ')'                                              -- Appends output with )           :: ShowS
+         ) `extQ` (shows :: String -> ShowS)                              -- Extends function to type-specific
+                                                                          -- (force output to be ShowS?)
+
+         -- annonymous function :: a -> [String -> String] = a -> ShowS
+         -- ShowS provides a way of performing string concatenation (prepending)
