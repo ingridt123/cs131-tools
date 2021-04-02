@@ -8,7 +8,6 @@ import AST
 import GenericAST1
 import GenericAST2
 import TestData
-import Data.List
 
 -- | Directory name of test files
 testDir :: FilePath
@@ -39,31 +38,6 @@ runAllTests runNum moduleNum = do
     runShapeTests runNum moduleNum
     runIntListTests runNum moduleNum
     runStrBinTreeTests runNum moduleNum
-
--- | TODO 
-verifyDotFiles :: FilePath -> IO ()
-verifyDotFiles dirName = do
-    allFiles <- listDirectory dirName
-    let dotFiles = filter (isExtensionOf ".dot") allFiles
-    verifyAllDotFiles dotFiles
-
-verifyAllDotFiles :: [FilePath] -> IO ()
-verifyAllDotFiles (f:fs) = do
-    compareF <- cmpDotFiles (joinPath [testDir, takeFileName f]) f
-    -- compareFs <- verifyAllDotFiles fs
-    print compareF
-    -- cmpDotFiles (joinPath [testDir, takeFileName f]) f
-
--- | Compare two dot files
--- Source: https://stackoverflow.com/questions/37352953/how-to-check-that-two-files-are-equal-in-haskell
-cmpDotFiles :: FilePath -> FilePath -> IO Bool
--- cmpDotFiles a b = aContents == bContents
---     where aContents = readFile a
---           bContents = readFile b
-cmpDotFiles a b = do
-    aContents <- readFile a
-    bContents <- readFile b
-    return (aContents == bContents)
 
 ----------------------
 -- Foo
