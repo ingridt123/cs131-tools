@@ -7,6 +7,11 @@ import GenericAST1
 import TestData
 
 -- Tester function to create dot and png files of AST
+-- d:   instance of data type to build tree
+-- str: name of instance d (appended to end of file name)
+-- num: test run
+-- E.g. run foo_1 "foo_1" 0
+-- TODO: add option to run with GenericAST1 or 2
 run :: Data d => d -> String -> Int -> IO ProcessHandle
 run d str num = createASTFiles ("genericAST-" ++ str ++ "-" ++ show num) (dataAST d)
 
@@ -19,7 +24,7 @@ runAllTests num = do
     runStuffTests num
     runShapeTests num
     runIntListTests num
-    -- runStrBinTreeTests num
+    runStrBinTreeTests num
 
 
 ----------------------
