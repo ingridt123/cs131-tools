@@ -2,24 +2,32 @@ module AST where
 
 import Dot
 import Data.Text as T
+import Control.Concurrent
 import System.Process
+import System.Directory
 
 -- TODO: look at encodeCompass / CardinalDirection in dot hackage
 -- TODO: fix (" " ++ label ++ " ") otherwise Node not "Node" in dot file
 
-createASTFiles :: [Char] -> DotGraph -> IO ProcessHandle
-createASTFiles fileName dotGraph = do
-  putStrLn $ "Dumping dotgraph to " ++ targetDot fileName
-  putStrLn $ "Dumping png to " ++ targetPng fileName
-  encodeToFile (targetDot fileName) dotGraph
-  runCommand ("dot " ++ targetDot fileName ++ " -Tpng > " ++ targetPng fileName)
+-- dirName = "" to create file in root directory
+createASTFiles :: String -> String -> DotGraph -> IO ProcessHandle
+createASTFiles dirName fileName dotGraph = do
+  createDirectoryIfMissing True dirName
+  putStrLn $ "Dumping dotgraph to " ++ dotFile
+  putStrLn $ "Dumping png to " ++ pngFile
+  encodeToFile dotFile dotGraph
+  runCommand ("dot " ++ dotFile ++ " -Tpng > " ++ pngFile)
+  where dotFile = targetDot dirName fileName
+        pngFile = targetPng dirName fileName
 
 
-targetDot :: String -> FilePath
-targetDot fileName = fileName ++ ".dot"
+targetDot :: String -> String -> FilePath
+targetDot "" fileName = fileName ++ ".dot"
+targetDot dirName fileName = dirName ++ "/" ++ fileName ++ ".dot"
 
-targetPng :: String -> FilePath
-targetPng fileName = fileName ++ ".png"
+targetPng :: String -> String -> FilePath
+targetPng "" fileName = fileName ++ ".png"
+targetPng dirName fileName = dirName ++ "/" ++ fileName ++ ".png"
 
 convertToId :: String -> Id
 convertToId id = Id (T.pack id)
