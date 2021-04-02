@@ -22,18 +22,20 @@ dataAST d = DotGraph NonStrict Directed (name "") (dataASTStatements rootId d []
 -- | Build list of statements for AST
 dataASTStatements :: Data d => [Char] -> d -> StatementS
 dataASTStatements nextId d = 
-      (createNodeS nextId . showConstr . toConstr $ d) 
-    . (foldr (.) id . dataASTEdges nextId $ childIds)
-    . (foldr (.) id . statements $ d)
+      (createNodeS nextId . showConstr . toConstr $ d)              -- Create parent node
+    . (foldr (.) id . dataASTEdges nextId $ childIds)               -- Create edges parent node --> 0 or more child(ren) node(s)
+    . (foldr (.) id . subtrees $ d)                                 -- Recurse on the subterms to create subtrees
     where childIds = dataASTChildIds nextId (glength d)
-          statements d = map (\i -> gmapQi i (dataASTStatements (childIds !! i)) d) [0,1..(glength d - 1)]
+          subtrees d = map (\i -> gmapQi i (dataASTStatements (childIds !! i)) d) [0,1..(glength d - 1)]
+          -- Apply gmapQi / dataASTStatements to every subterm of d with childIds[i]
     -- . (foldr (.) id . gmapQ (dataASTStatements nextId) $ d)
+    -- doesn't work because need to iterate through childIds
 
-
+-- | Version of createNode that return StatementS instead of Statement
 createNodeS :: String -> String -> StatementS
-createNodeS id label =  (++) [createNode id label]
--- createNodeS id label =  [createNode id label] (++) doesn't work?
+createNodeS id label = (++) [createNode id label]
 
+-- | Version of createEdge that return StatementS instead of Statement
 createEdgeS :: String -> String -> StatementS
 createEdgeS id1 id2 = (++) [createEdge id1 id2]
 
