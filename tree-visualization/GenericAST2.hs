@@ -23,13 +23,12 @@ dataAST d = DotGraph NonStrict Directed (name "") (dataASTStatements rootId d []
 dataASTStatements :: Data d => [Char] -> d -> StatementS
 dataASTStatements nextId d = 
       (createNodeS nextId . showConstr . toConstr $ d) 
-    . (foldr (.) id . dataASTEdges nextId $ dataASTChildIds nextId (glength d))
-    . (foldr (.) id . gmapQ (dataASTStatements nextId) $ d)
+    . (foldr (.) id . dataASTEdges nextId $ childIds)
+    . (foldr (.) id . statements $ d)
+    where childIds = dataASTChildIds nextId (glength d)
+          statements d = map (\i -> gmapQi i (dataASTStatements (childIds !! i)) d) [0,1..(glength d - 1)]
+    -- . (foldr (.) id . gmapQ (dataASTStatements nextId) $ d)
 
-    -- . ((.) . (\i -> gmapQi i (dataASTStatements ["1","2","3"] !! i)) $ d)
-    -- . (foldr (.) id . map (\i -> gmapQi i (dataASTStatements ["1","2","3"] !! i)) $ d)
-
-    
 
 createNodeS :: String -> String -> StatementS
 createNodeS id label =  (++) [createNode id label]
