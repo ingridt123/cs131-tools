@@ -2,13 +2,16 @@ module TestRunner where
 
 import Data.Data
 import System.Process
+import System.FilePath
+import System.Directory
 import AST
 import GenericAST1
 import GenericAST2
 import TestData
+import Data.List
 
 -- | Directory name of test files
-testDir :: [Char]
+testDir :: FilePath
 testDir = "genericAST-tests"
 
 -- | Tester function to create dot and png files of AST
@@ -38,13 +41,25 @@ runAllTests runNum moduleNum = do
     runStrBinTreeTests runNum moduleNum
 
 -- | TODO 
--- verifyDotFiles :: FilePath -> Bool
--- verifyDotFiles dirName = verifyAllDotFiles
--- listDirectory
+verifyDotFiles :: FilePath -> IO ()
+verifyDotFiles dirName = do
+    allFiles <- listDirectory dirName
+    let dotFiles = filter (isExtensionOf ".dot") allFiles
+    verifyAllDotFiles dotFiles
+
+verifyAllDotFiles :: [FilePath] -> IO ()
+verifyAllDotFiles (f:fs) = do
+    compareF <- cmpDotFiles (joinPath [testDir, takeFileName f]) f
+    -- compareFs <- verifyAllDotFiles fs
+    print compareF
+    -- cmpDotFiles (joinPath [testDir, takeFileName f]) f
 
 -- | Compare two dot files
 -- Source: https://stackoverflow.com/questions/37352953/how-to-check-that-two-files-are-equal-in-haskell
 cmpDotFiles :: FilePath -> FilePath -> IO Bool
+-- cmpDotFiles a b = aContents == bContents
+--     where aContents = readFile a
+--           bContents = readFile b
 cmpDotFiles a b = do
     aContents <- readFile a
     bContents <- readFile b
