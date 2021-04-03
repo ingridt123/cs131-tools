@@ -1,5 +1,0 @@
-digraph "" {
-  "0" [label=Plus];
-  "1" [label=Num];
-  "0" -> "1" [];
-}
