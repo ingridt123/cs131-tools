@@ -13,21 +13,6 @@ import TestData
 testDir :: FilePath
 testDir = "genericAST-tests"
 
--- | Tester function to create dot and png files of AST
--- data:      instance of data type to build tree
--- name:      name of instance d (appended to end of file name)
--- runNum:    test run runNum moduleNumber
--- moduleNum: 1 for GenericAST1, 2 for GenericAST2
--- E.g. run foo_1 "foo_1" 0
--- TODO: add option to run with GenericAST1 or 2
-run :: Data d => d -> String -> Int -> Int -> IO ProcessHandle
-run d name runNum moduleNum = createASTFiles dirName fileName tree
-    where dirName = "genericAST-" ++ show runNum
-          fileName = "genericAST-" ++ name ++ "-" ++ show runNum
-          tree = if moduleNum == 1 
-                    then GenericAST1.dataAST d
-                    else GenericAST2.dataAST d
-
 -- Run all tests
 runAllTests :: Int -> Int -> IO ProcessHandle
 runAllTests runNum moduleNum = do
@@ -38,6 +23,20 @@ runAllTests runNum moduleNum = do
     runShapeTests runNum moduleNum
     runIntListTests runNum moduleNum
     runStrBinTreeTests runNum moduleNum
+
+-- | Tester function to create dot and png files of AST
+-- data:      instance of data type to build tree
+-- name:      name of instance d (appended to end of file name)
+-- runNum:    test run runNum moduleNumber
+-- moduleNum: 1 for GenericAST1, 2 for GenericAST2
+-- E.g. run foo_1 "foo_1" 0
+run :: Data d => d -> String -> Int -> Int -> IO ProcessHandle
+run d name runNum moduleNum = createASTFiles dirName fileName tree
+    where dirName = "genericAST-" ++ show runNum
+          fileName = "genericAST-" ++ name
+          tree = if moduleNum == 1 
+                    then GenericAST1.dataAST d
+                    else GenericAST2.dataAST d
 
 ----------------------
 -- Foo

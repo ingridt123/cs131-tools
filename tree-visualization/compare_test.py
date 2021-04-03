@@ -4,7 +4,7 @@ Testing function comparing png files of trees
 
 import os
 
-TEST_DIRECTORY = 'genericAST-test'
+TEST_DIRECTORY = 'genericAST-tests'
 
 # Source: https://stackoverflow.com/questions/58099235/how-to-compare-two-image-files-contents-in-python
 def compare_files(file1, file2):

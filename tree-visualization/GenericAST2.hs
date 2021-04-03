@@ -1,6 +1,7 @@
 module GenericAST2 where
 
 import Data.Data
+import Data.Typeable
 import Data.List ( elemIndices )
 import Data.Generics.Text ( gshow )
 import Data.Generics.Schemes
@@ -8,7 +9,10 @@ import AST
 import Dot
 
 -- | Constants
+name :: String -> Maybe Id
 name n = Just (convertToId n)
+
+rootId :: [Char]
 rootId = "1"
 
 type StatementS = [Statement] -> [Statement]
@@ -25,9 +29,13 @@ dataASTStatements nextId d =
       (createNodeS nextId . showConstr . toConstr $ d)              -- Create parent node
     . (foldr (.) id . dataASTEdges nextId $ childIds)               -- Create edges parent node --> 0 or more child(ren) node(s)
     . (foldr (.) id . subtrees $ d)                                 -- Recurse on the subterms to create subtrees
-    where childIds = dataASTChildIds nextId (glength d)
-          subtrees d = map (\i -> gmapQi i (dataASTStatements (childIds !! i)) d) [0,1..(glength d - 1)]
+    where childNum = if typeOf d == typeOf "Hello" then 1 else glength d
+          childIds = dataASTChildIds nextId childNum
+          subtrees d = if typeOf d == typeOf "Hello"        -- TODO: BETTER WAY OF DOING THIS!!!
+                then [createNodeS (head childIds) (gshow d)]
+                else map (\i -> gmapQi i (dataASTStatements (childIds !! i)) d) [0,1..(glength d - 1)]
           -- Apply gmapQi / dataASTStatements to every subterm of d with childIds[i]
+
     -- . (foldr (.) id . gmapQ (dataASTStatements nextId) $ d)
     -- doesn't work because need to iterate through childIds
 
