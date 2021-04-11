@@ -45,6 +45,6 @@ dotGraph_exp_1 = gAST exp_1
 dotGraph_exp2_1 = gAST exp2_1
 
 -- Stores exp_2_sample.dot and exp_2_sample.png to current directory
-dotFiles_exp_2 = gStoreAST exp_2 "" "exp_2_sample"
+dotFiles_exp_2 = gStoreAST exp_2 False "" "exp_2_sample"
 -- Stores exp2_2_sample.dot and exp2_2_sample.png to sample directory
-dotFiles_exp2_2 = gStoreAST exp2_2 "sample" "exp2_2_sample"
+dotFiles_exp2_2 = gStoreAST exp2_2 False "sample" "exp2_2_sample"

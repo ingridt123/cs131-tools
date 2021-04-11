@@ -37,18 +37,21 @@ import System.Directory
 
 -- | Build abstract syntax tree (AST) from any data type
 gAST :: Data d => d           -- ^ Data instance, must derive (Show, Data, Typeable)
+               -> Bool        -- ^ True to expand String as [Char] in AST, False otherwise
                -> DotGraph    -- ^ Representation of dot graph
-gAST d = DotGraph NonStrict Directed (Just (convertToId "")) (gASTStatements "1" d [])
+gAST d expandStr = 
+      DotGraph NonStrict Directed (Just (convertToId "")) (gASTStatements "1" d expandStr [])
 
 
 -- Store AST dot and png files of dot graph in dirName as fileName
 gStoreAST :: Data d => d                  -- ^ Data instance, must derive (Show, Data, Typeable)
+                    -> Bool               -- ^ True to expand String as [Char] in AST, False otherwise
                     -> FilePath           -- ^ Name of directory, set to "" to store in current directory
                     -> FilePath           -- ^ Base name of file
                     -> IO ProcessHandle
-gStoreAST d dirName fileName = do
+gStoreAST d expandStr dirName fileName = do
   createDirectoryIfMissing True dirName
-  encodeToFile dotFile (gAST d)
+  encodeToFile dotFile (gAST d expandStr)
   runCommand ("dot " ++ dotFile ++ " -Tpng > " ++ pngFile)
   where dotFile = targetDot dirName fileName
         pngFile = targetPng dirName fileName
@@ -63,16 +66,18 @@ type StatementS = [Statement] -> [Statement]
 -- | Build list of statements for AST
 gASTStatements :: Data d => [Char]        -- ^ Id of next node in AST
                          -> d             -- ^ Generic data, must derive (Show, Data, Typeable)
+                         -> Bool          -- ^ True to expand String as [Char] in AST, False otherwise
                          -> StatementS    -- ^ Prefix list of statements for AST
-gASTStatements nextId d = 
+gASTStatements nextId d expandStr = 
       (createNodeS nextId . showConstr . toConstr $ d)
     . (foldr (.) id . gASTEdges nextId $ childIds)
     . (foldr (.) id . subtrees $ d)
-    where childNum = if typeOf d == typeOf "Hello" then 1 else glength d
-          childIds = gASTChildIds nextId childNum
-          subtrees d = if typeOf d == typeOf "Hello"        -- TODO: BETTER WAY OF DOING THIS!!!
+    where isString d = (typeOf d == typeOf "") || expandStr      -- TODO: BETTER WAY OF DOING THIS!!!
+          childNum   = if isString d then 1 else glength d
+          childIds   = gASTChildIds nextId childNum
+          subtrees d = if isString d
                 then [createNodeS (head childIds) (gshow d)]
-                else map (\i -> gmapQi i (gASTStatements (childIds !! i)) d) [0,1..(glength d - 1)]
+                else map (\i -> gmapQi i (gASTStatements (childIds !! i)) d expandStr) [0,1..(glength d - 1)]
 
 
 -- | Build list of edge statements for AST from parentId to ids
@@ -90,7 +95,6 @@ gASTChildIds :: String        -- ^ Id of parent node
 gASTChildIds _ 0 = []
 gASTChildIds parentId i = gASTChildIds parentId (i-1) ++ [parentId ++ "." ++ show i]
 
-
 ------------------------------------------------------------------------------
 -- DOT LIBRARY HELPER FUNCTIONS
 ------------------------------------------------------------------------------
@@ -107,7 +111,7 @@ convertToNodeId id = NodeId (convertToId id) Nothing
 createNode :: String -> String -> Statement
 createNode id label = 
     StatementNode $ NodeStatement (convertToNodeId id) 
-                                  -- [Attribute (convertToId "label") (convertToId label)]
+                                  -- [Attribute (convertToId "label") (convertToId label)] TODO: FIX THIS
                                   [Attribute (convertToId "label") (convertToId (" " ++ label ++ " "))]
 
 -- | Version of createNode that returns StatementS instead of Statement
