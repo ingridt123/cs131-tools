@@ -35,6 +35,8 @@ import System.Directory
 
 ------------------------------------------------------------------------------
 
+-- [Attribute (convertToId "label") (convertToId label)] TODO: FIX THIS??
+
 -- | Build abstract syntax tree (AST) from any data type
 gAST :: Data d => d           -- ^ Data instance, must derive (Show, Data, Typeable)
                -> Bool        -- ^ True to expand String as [Char] in AST, False otherwise
@@ -72,7 +74,7 @@ gASTStatements nextId d expandStr =
       (createNodeS nextId . showConstr . toConstr $ d)
     . (foldr (.) id . gASTEdges nextId $ childIds)
     . (foldr (.) id . subtrees $ d)
-    where isString d = (typeOf d == typeOf "") || expandStr      -- TODO: BETTER WAY OF DOING THIS!!!
+    where isString d = (typeOf d == typeOf "") && not expandStr     -- TODO: BETTER WAY OF DOING THIS!!!
           childNum   = if isString d then 1 else glength d
           childIds   = gASTChildIds nextId childNum
           subtrees d = if isString d
@@ -111,7 +113,6 @@ convertToNodeId id = NodeId (convertToId id) Nothing
 createNode :: String -> String -> Statement
 createNode id label = 
     StatementNode $ NodeStatement (convertToNodeId id) 
-                                  -- [Attribute (convertToId "label") (convertToId label)] TODO: FIX THIS
                                   [Attribute (convertToId "label") (convertToId (" " ++ label ++ " "))]
 
 -- | Version of createNode that returns StatementS instead of Statement
