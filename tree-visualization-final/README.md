@@ -1,6 +1,6 @@
 # GenericAST
 
-Note: see `Sample.hs` for the full code sample.
+Note: see `Sample.hs` for a full code sample.
 
 Say we want to encode the following arithmetic equation in Haskell:
 ```
@@ -28,12 +28,12 @@ But now what if we want to encode something more complicated, like this arithmet
 2 - ((7 * (2 + 3)) / (1 + 1))
 ```
 
-Using the data type `Exp2` we defined above, in Haskell this would be encoded as
+Using the data type `Exp2` we defined above, in Haskell this would be encoded as:
 ```
 exp2_2 :: Exp2
 exp2_2 = BinOp (Num2 2.0) MinusOp (BinOp (BinOp (Num2 7.0) TimesOp (BinOp (Num2 2.0) PlusOp (Num2 3.0))) DivOp (BinOp (Num2 1.0) PlusOp (Num2 1.0)))
 ```
-which becomes more difficult to reason about.
+With 6 terms, this already becomes much more difficult to reason about.
 
 This is where `GenericAST` may come in handy. All you need to do is have your data type derive three typeclasses `Show`, `Data` and `Typeable` and you can use `GenericAST` to visualize your data in an abstract syntax tree (AST)!
 
@@ -50,11 +50,12 @@ data Op = PlusOp | MinusOp | TimesOp | DivOp
 And now all we need to do is use `GenericAST` to create our AST and store both the dot and png files to our current directory!
 ```
 dotFiles_exp2_1 = gStoreAST exp2_1 False "" "exp2_1_sample"
-dotFiles_exp2_2 = gStoreAST exp2_2 False "" "exp2_2_sample"
 ```
-
 ![AST for `exp2_1`](exp2_1_sample.png)
 
+```
+dotFiles_exp2_2 = gStoreAST exp2_2 False "" "exp2_2_sample"
+```
 ![AST for `exp2_2`](exp2_2_sample.png)
 
 And here's the breakdown of the parameters of `gStoreAST`:
@@ -74,11 +75,14 @@ data StringBinaryTree = Leaf    String
                       deriving (Show, Data, Typeable)
                       
 strBinTree = Node "2" (Node "hello" (Leaf "91") (Node "j" (Leaf "") (Leaf "200"))) (Node "3" (Leaf "__") (Leaf "293"))
-
-dotFiles_strBinTree_false = gStoreAST strBinTree False "" "strBinTree_false_sample"
-dotFiles_strBinTree_true = gStoreAST strBinTree True "" "strBinTree_true_sample"
 ```
 
+```
+dotFiles_strBinTree_false = gStoreAST strBinTree False "" "strBinTree_false_sample"
+```
 ![AST for `strBinTree (false)`](strBinTree_false_sample.png)
 
+```
+dotFiles_strBinTree_true = gStoreAST strBinTree True "" "strBinTree_true_sample"
+```
 ![AST for `strBinTree (true)`](strBinTree_true_sample.png)
