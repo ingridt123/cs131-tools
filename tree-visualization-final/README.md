@@ -51,12 +51,12 @@ And now all we need to do is use `GenericAST` to create our AST and store both t
 ```
 dotFiles_exp2_1 = gStoreAST exp2_1 False "sample-output" "exp2_1_sample"
 ```
-![AST for `exp2_1`](exp2_1_sample.png)
+![AST for `exp2_1`](sample-output/exp2_1_sample.png)
 
 ```
 dotFiles_exp2_2 = gStoreAST exp2_2 False "sample-output" "exp2_2_sample"
 ```
-![AST for `exp2_2`](exp2_2_sample.png)
+![AST for `exp2_2`](sample-output/exp2_2_sample.png)
 
 And here's the breakdown of the parameters of `gStoreAST`:
 ```
@@ -80,9 +80,9 @@ strBinTree = Node "2" (Node "hello" (Leaf "91") (Node "j" (Leaf "") (Leaf "200")
 ```
 dotFiles_strBinTree_false = gStoreAST strBinTree False "sample-output" "strBinTree_false_sample"
 ```
-![AST for `strBinTree (false)`](strBinTree_false_sample.png)
+![AST for `strBinTree (false)`](sample-output/strBinTree_false_sample.png)
 
 ```
 dotFiles_strBinTree_true = gStoreAST strBinTree True "sample-output" "strBinTree_true_sample"
 ```
-![AST for `strBinTree (true)`](strBinTree_true_sample.png)
+![AST for `strBinTree (true)`](sample-output/strBinTree_true_sample.png)
