@@ -47,14 +47,14 @@ data Op = PlusOp | MinusOp | TimesOp | DivOp
         deriving (Show, Data, Typeable)
 ```
 
-And now all we need to do is use `GenericAST` to create our AST and store both the dot and png files to our current directory!
+And now all we need to do is use `GenericAST` to create our AST and store both the dot and png files to the sample-output directory!
 ```
-dotFiles_exp2_1 = gStoreAST exp2_1 False "" "exp2_1_sample"
+dotFiles_exp2_1 = gStoreAST exp2_1 False "sample-output" "exp2_1_sample"
 ```
 ![AST for `exp2_1`](exp2_1_sample.png)
 
 ```
-dotFiles_exp2_2 = gStoreAST exp2_2 False "" "exp2_2_sample"
+dotFiles_exp2_2 = gStoreAST exp2_2 False "sample-output" "exp2_2_sample"
 ```
 ![AST for `exp2_2`](exp2_2_sample.png)
 
@@ -78,11 +78,11 @@ strBinTree = Node "2" (Node "hello" (Leaf "91") (Node "j" (Leaf "") (Leaf "200")
 ```
 
 ```
-dotFiles_strBinTree_false = gStoreAST strBinTree False "" "strBinTree_false_sample"
+dotFiles_strBinTree_false = gStoreAST strBinTree False "sample-output" "strBinTree_false_sample"
 ```
 ![AST for `strBinTree (false)`](strBinTree_false_sample.png)
 
 ```
-dotFiles_strBinTree_true = gStoreAST strBinTree True "" "strBinTree_true_sample"
+dotFiles_strBinTree_true = gStoreAST strBinTree True "sample-output" "strBinTree_true_sample"
 ```
 ![AST for `strBinTree (true)`](strBinTree_true_sample.png)
