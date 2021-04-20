@@ -2,8 +2,8 @@
 
 module Sample where
 
-import Data.Data
-import GenericAST
+import Data.Data ( Data )
+import GenericAST ( gAST, gStoreAST )
 
 -- | Declare data type(s) deriving (Data)
 data Exp = Num      Int
