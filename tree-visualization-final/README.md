@@ -1,4 +1,4 @@
-# GenericAST
+# Introducing `GenericAST`
 
 Note: see `Sample.hs` for a full code sample.
 

@@ -62,14 +62,14 @@ gStoreAST d expandStr dirName fileName = do
 -- GENERIC AST HELPER FUNCTIONS
 ------------------------------------------------------------------------------
 
--- | Prefix list of statements for DotGraph
+-- | Difference list of statements for DotGraph
 type StatementS = [Statement] -> [Statement]
 
 -- | Build list of statements for AST
 gASTStatements :: Data d => [Char]        -- ^ Id of next node in AST
                          -> d             -- ^ Generic data, must derive (Show, Data, Typeable)
                          -> Bool          -- ^ True to expand String as [Char] in AST, False otherwise
-                         -> StatementS    -- ^ Prefix list of statements for AST
+                         -> StatementS    -- ^ Difference list of statements for AST
 gASTStatements nextId d expandStr = 
       (createNodeS nextId . showConstr . toConstr $ d)
     . (foldr (.) id . gASTEdges nextId $ childIds)
@@ -85,7 +85,7 @@ gASTStatements nextId d expandStr =
 -- | Build list of edge statements for AST from parentId to ids
 gASTEdges :: String           -- ^ Id of parent node
           -> [String]         -- ^ List of ids of child nodes
-          -> [StatementS]     -- ^ Prefix list of edge statements
+          -> [StatementS]     -- ^ Difference list of edge statements
 gASTEdges _ [] = []
 gASTEdges parentId (id : ids) = createEdgeS parentId id : gASTEdges parentId ids
 
