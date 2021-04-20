@@ -2,24 +2,23 @@
 
 module Sample where
 
-import Data.Typeable
 import Data.Data
 import GenericAST
 
--- | Declare data type(s) deriving (Show, Data, Typeable)
+-- | Declare data type(s) deriving (Data)
 data Exp = Num      Int
          | Plus     Exp Exp
          | Times    Exp Exp
-         deriving (Show, Data, Typeable)
+         deriving (Data)
 
 data Op = PlusOp | MinusOp | TimesOp | DivOp
-        deriving (Show, Data, Typeable)
+        deriving (Data)
 
 data Exp2 = Num2      Double
           | BinOp     Exp2 Op Exp2
           | ExpList   [Exp]
           | ExpLists  [Exp] [Exp2]
-          deriving (Show, Data, Typeable)
+          deriving (Data)
 
 
 -- | Declare instance(s) of data type(s)
