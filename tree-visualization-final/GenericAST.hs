@@ -38,7 +38,7 @@ import System.Directory
 -- [Attribute (convertToId "label") (convertToId label)] TODO: FIX THIS??
 
 -- | Build abstract syntax tree (AST) from any data type
-gAST :: Data d => d           -- ^ Data instance, must derive (Show, Data, Typeable)
+gAST :: Data d => d           -- ^ Data instance, must derive (Data)
                -> Bool        -- ^ True to expand String as [Char] in AST, False otherwise
                -> DotGraph    -- ^ Representation of dot graph
 gAST d expandStr = 
@@ -46,7 +46,7 @@ gAST d expandStr =
 
 
 -- Store AST dot and png files of dot graph in dirName as fileName
-gStoreAST :: Data d => d                  -- ^ Data instance, must derive (Show, Data, Typeable)
+gStoreAST :: Data d => d                  -- ^ Data instance, must derive (Data)
                     -> Bool               -- ^ True to expand String as [Char] in AST, False otherwise
                     -> FilePath           -- ^ Name of directory, set to "" to store in current directory
                     -> FilePath           -- ^ Base name of file
@@ -67,17 +67,17 @@ type StatementS = [Statement] -> [Statement]
 
 -- | Build list of statements for AST
 gASTStatements :: Data d => [Char]        -- ^ Id of next node in AST
-                         -> d             -- ^ Generic data, must derive (Show, Data, Typeable)
+                         -> d             -- ^ Generic data, must derive (Data)
                          -> Bool          -- ^ True to expand String as [Char] in AST, False otherwise
                          -> StatementS    -- ^ Difference list of statements for AST
 gASTStatements nextId d expandStr = 
       (createNodeS nextId . showConstr . toConstr $ d)
     . (foldr (.) id . gASTEdges nextId $ childIds)
     . (foldr (.) id . subtrees $ d)
-    where isString d = (typeOf d == typeOf "") && not expandStr     -- TODO: BETTER WAY OF DOING THIS!!!
-          childNum   = if isString d then 1 else glength d
+    where strNode    = (typeOf d == typeOf "") && not expandStr
+          childNum   = if strNode then 1 else glength d
           childIds   = gASTChildIds nextId childNum
-          subtrees d = if isString d
+          subtrees d = if strNode
                 then [createNodeS (head childIds) (gshow d)]
                 else map (\i -> gmapQi i (gASTStatements (childIds !! i)) d expandStr) [0,1..(glength d - 1)]
 

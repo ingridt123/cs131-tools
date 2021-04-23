@@ -76,10 +76,10 @@ gASTStatements nextId d expandStr =
       (createNodeS nextId . showConstr . toConstr $ d)
     . (foldr (.) id . gASTEdges nextId $ childIds)
     . (foldr (.) id . subtrees $ d)
-    where isString d = (typeOf d == typeOf "") && not expandStr
-          childNum   = if isString d then 1 else glength d
+    where strNode    = (typeOf d == typeOf "") && not expandStr
+          childNum   = if strNode then 1 else glength d
           childIds   = gASTChildIds nextId childNum
-          subtrees d = if isString d
+          subtrees d = if strNode
                 then [createNodeS (head childIds) (gshow d)]
                 else map (\i -> gmapQi i (gASTStatements (childIds !! i)) d expandStr) [0,1..(glength d - 1)]
 ```
@@ -133,11 +133,11 @@ foldr (.) id [f1, f2, ..., fn] [] :: [Statement]
 (foldr (.) id . subtrees $ d) :: StatementS
 
 subtrees d :: [StatementS]
-where subtrees d = if isString d
+where subtrees d = if strNode
                    then [createNodeS (head childIds) (gshow d)]
                    else map (\i -> gmapQi i (gASTStatements (childIds !! i)) d expandStr) [0,1..(glength d - 1)]
 ```
-If `isString d = True`(i.e. `d` is a `String` and `expandStr = False`), then one node is created for `d` where the label is the string `d`. Any terms that are Strings must be leaf nodes since `String`s don't have any subterms.
+If `strNode = True`(i.e. `d` is a `String` and `expandStr = False`), then one node is created for `d` where the label is the string `d`. Any terms that are Strings must be leaf nodes since `String`s don't have any subterms.
 
 Otherwise, the last line recursively applies `gASTStatements` to each of the immediate subterm(s) of `d`. This is done using the `map` function over the list `[0,1..(glength d - 1)]` (where `glength d` is the number of immediate subterms of `d`), and `gmapQi` applies `(gASTStatements (childIds !! i))` to the i'th immediate subterm of `d`.
 
@@ -146,7 +146,3 @@ Similar to the previous line, since `subtrees` returns [StatementS], we again us
 #### Putting It All Together
 
 These three lines, all of which return `StatementS`, are combined using the composition operation. Therefore, when `[]` is applied to `gASTStatements` in `gAST`, the list of statements represented by `StatementS` returned by `gASTStatements` is prepended to `[]` and a list of `Statement`s are returned, which are then used to create the `DotGraph`.
-
-
-
-- why three typeclasses needed
