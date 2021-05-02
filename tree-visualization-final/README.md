@@ -1,6 +1,6 @@
 # Introducing `GenericAST`
 
-Note: see `Sample.hs` for a full code sample.
+Note: A walkthrough video is available [here](https://www.youtube.com/watch?v=aFQ-gwV8mEM). See `Walkthrough.hs`, `StringBinTree.hs` (both from the video) `Sample.hs` for code samples.
 
 Say we want to encode the following arithmetic equation in Haskell:
 ```
