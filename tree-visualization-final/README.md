@@ -35,7 +35,7 @@ exp2_2 = BinOp (Num2 2.2) MinusOp (BinOp (BinOp (Num2 7.4) TimesOp (BinOp (Num2 
 ```
 With 6 terms, this already becomes much more difficult to reason about.
 
-This is where `GenericAST` may come in handy. All you need to do is have your data type derive the `Data` typeclass and you can use `GenericAST` to visualize your data in an abstract syntax tree (AST)!
+This is where `GenericAST` can come in handy. All you need to do is have your data type derive the `Data` typeclass and you can use `GenericAST` to visualize your data in an abstract syntax tree (AST)!
 
 So let's add the typeclass to our data type:
 ```
