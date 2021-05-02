@@ -68,7 +68,7 @@ dotFiles_exp2_2 = gStoreAST exp2_2 False "sample-output" "exp2_2_sample"
 And here's the breakdown of the parameters of `gStoreAST`:
 ```
 -- Store AST dot and png files of dot graph in dirName as fileName
-gStoreAST :: Data d => d                  -- ^ Data instance, must derive (Show, Data, Typeable)
+gStoreAST :: Data d => d                  -- ^ Data instance, must derive (Data)
                     -> Bool               -- ^ True to expand String as [Char] in AST, False otherwise
                     -> FilePath           -- ^ Name of directory, set to "" to store in current directory
                     -> FilePath           -- ^ Base name of file
@@ -79,7 +79,7 @@ Below is an example where we set `expandStr` to `True`
 ```
 data StringBinaryTree = Leaf    String 
                       | Node    String StringBinaryTree StringBinaryTree
-                      deriving (Show, Data, Typeable)
+                      deriving (Data)
                       
 strBinTree = Node "2" (Node "hello" (Leaf "91") (Node "j" (Leaf "") (Leaf "200"))) (Node "3" (Leaf "__") (Leaf "293"))
 ```
