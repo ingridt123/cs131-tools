@@ -73,24 +73,32 @@ gASTStatements :: Data d => [Char]        -- ^ Id of next node in AST
                          -> Bool          -- ^ True to expand String as [Char] in AST, False otherwise
                          -> StatementS    -- ^ Difference list of statements for AST
 gASTStatements nextId d expandStr = 
-      (createNodeS nextId . showConstr . toConstr $ d)
-    . (foldr (.) id . gASTEdges nextId $ childIds)
-    . (foldr (.) id . subtrees $ d)
-    where strNode    = (typeOf d == typeOf "") && not expandStr
-          childNum   = if strNode then 1 else glength d
+      if (typeOf d == typeOf "") && not expandStr
+            then createNodeS nextId (gshow d)                           -- LINE 1
+            else (createNodeS nextId . showConstr . toConstr $ d)       -- LINE 2
+                  . (foldr (.) id . gASTEdges nextId $ childIds)        -- LINE 3
+                  . (foldr (.) id . subtrees $ d)                       -- LINE 4
+    where childNum   = glength d
           childIds   = gASTChildIds nextId childNum
-          subtrees d = if strNode
-                then [createNodeS (head childIds) (gshow d)]
-                else map (\i -> gmapQi i (gASTStatements (childIds !! i)) d expandStr) [0,1..(glength d - 1)]
+          subtrees d = map (\i -> gmapQi i (gASTStatements (childIds !! i)) d expandStr) [0,1..(glength d - 1)]
 ```
 
 The following sections break down the `gASTStatements` function line by line.
 
-#### Line 1: Constructor
+#### Line 1: String Leaf Node
+```
+if (typeOf d == typeOf "") && not expandStr
+    then createNodeS nextId (gshow d)
+```
+If `d` is a `String` and `expandStr = False`, then one node is created for `d` where the label is the string `d`. This is a separate case since no node is created for the constructor, hence no edges need to be created from the constructor node to the subterm node(s). Additionally, instead of recursing into the `[Char]` to create subtrees of nodes, only a single node is created. Note that any terms that are Strings must be leaf nodes since `String`s don't have any subterms.
+
+The decision was made not to create a constructor node in this situation, since the constructor of non-empty `String`s are `(:)` and `[]` for `""` (as `String = [Char]`), but this is not informative if the tree does not expand `String`s as `[Char]`s.
+
+#### Line 2: Constructor
 ```
 (createNodeS nextId . showConstr . toConstr $ d) :: StatementS
 ```
-The first line creates a difference list representing a 1-element list containing a node for the name of the constructor with id `nextId`. For example,
+The second line creates a difference list representing a 1-element list containing a node for the name of the constructor with id `nextId`. For example,
 ```
 d :: Exp2
 d = Num2 2.0
@@ -103,11 +111,11 @@ showConstr . toConstr $ d :: String
 createNodeS "1.1" . showConstr . toConstr $ d :: [StatementS]
 ```
 
-#### Line 2: Parent -> Child Edges
+#### Line 3: Parent -> Child Edges
 ```
 (foldr (.) id . gASTEdges nextId $ childIds) :: StatementS
 ```
-The second line creates a difference list representing a list containing edges from the parent node (with id `nextId`) to each of the child nodes. Each element in `childIds` is an id for these child nodes.
+The third line creates a difference list representing a list containing edges from the parent node (with id `nextId`) to each of the child nodes. Each element in `childIds` is an id for these child nodes.
 
 Note that if `d` is a `String` and `expandStr = False` (i.e. `String`s should not be expanded), then there will only be one child node and thus only one element in `childIds`. Otherwise, the number of child nodes is equal to the number of immediate subterms of `d`. For example, `BinOp (BinOp (Num2 5.0) PlusOp (BinOp (Num2 2.0) TimesOp (Num2 6.0))) MinusOp (Num2 4.0)` has 3 immediate subterms `BinOp (Num2 5.0) ...`, `MinusOp` and `(Num2 4.0)`.
 
@@ -128,7 +136,7 @@ foldr (.) id [f1, f2, ..., fn] [] :: [Statement]
     = xs1 ++ xs2 ++ ... ++ xsn
 ```
 
-#### Line 3: Recursion
+#### Line 4: Recursion
 ```
 (foldr (.) id . subtrees $ d) :: StatementS
 
@@ -137,9 +145,7 @@ where subtrees d = if strNode
                    then [createNodeS (head childIds) (gshow d)]
                    else map (\i -> gmapQi i (gASTStatements (childIds !! i)) d expandStr) [0,1..(glength d - 1)]
 ```
-If `strNode = True`(i.e. `d` is a `String` and `expandStr = False`), then one node is created for `d` where the label is the string `d`. Any terms that are Strings must be leaf nodes since `String`s don't have any subterms.
-
-Otherwise, the last line recursively applies `gASTStatements` to each of the immediate subterm(s) of `d`. This is done using the `map` function over the list `[0,1..(glength d - 1)]` (where `glength d` is the number of immediate subterms of `d`), and `gmapQi` applies `(gASTStatements (childIds !! i))` to the i'th immediate subterm of `d`.
+The last line recursively applies `gASTStatements` to each of the immediate subterm(s) of `d`. This is done using the `map` function over the list `[0,1..(glength d - 1)]` (where `glength d` is the number of immediate subterms of `d`), and `gmapQi` applies `(gASTStatements (childIds !! i))` to the i'th immediate subterm of `d`.
 
 Similar to the previous line, since `subtrees` returns [StatementS], we again use `foldr (.) id` to combine these `StatementS` lists into `StatementS` (see section above for explanation).
 
