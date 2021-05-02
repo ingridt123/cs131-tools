@@ -39,6 +39,7 @@ This is where `GenericAST` can come in handy. All you need to do is have your da
 
 So let's add the typeclass to our data type:
 ```
+{-# LANGUAGE DeriveDataTypeable #-}
 import Data.Data ( Data )
 
 data Exp2 = Num2      Doble
