@@ -72,7 +72,7 @@ gASTStatements :: Data d => [Char]        -- ^ Id of next node in AST
                          -> StatementS    -- ^ Difference list of statements for AST
 gASTStatements nextId d expandStr = 
       if (typeOf d == typeOf "") && not expandStr
-            then createNodeS (nextId ++ ".1") (gshow d)
+            then createNodeS nextId (gshow d)
             else (createNodeS nextId . showConstr . toConstr $ d)
                   . (foldr (.) id . gASTEdges nextId $ childIds)
                   . (foldr (.) id . subtrees $ d)
