@@ -71,15 +71,14 @@ gASTStatements :: Data d => [Char]        -- ^ Id of next node in AST
                          -> Bool          -- ^ True to expand String as [Char] in AST, False otherwise
                          -> StatementS    -- ^ Difference list of statements for AST
 gASTStatements nextId d expandStr = 
-      (createNodeS nextId . showConstr . toConstr $ d)
-    . (foldr (.) id . gASTEdges nextId $ childIds)
-    . (foldr (.) id . subtrees $ d)
-    where strNode    = (typeOf d == typeOf "") && not expandStr
-          childNum   = if strNode then 1 else glength d
+      if (typeOf d == typeOf "") && not expandStr
+            then createNodeS (nextId ++ ".1") (gshow d)
+            else (createNodeS nextId . showConstr . toConstr $ d)
+                  . (foldr (.) id . gASTEdges nextId $ childIds)
+                  . (foldr (.) id . subtrees $ d)
+    where childNum   = glength d
           childIds   = gASTChildIds nextId childNum
-          subtrees d = if strNode
-                then [createNodeS (head childIds) (gshow d)]
-                else map (\i -> gmapQi i (gASTStatements (childIds !! i)) d expandStr) [0,1..(glength d - 1)]
+          subtrees d = map (\i -> gmapQi i (gASTStatements (childIds !! i)) d expandStr) [0,1..(glength d - 1)]
 
 
 -- | Build list of edge statements for AST from parentId to ids
